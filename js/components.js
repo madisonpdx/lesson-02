@@ -37,7 +37,7 @@ Crafty.c('Tree', {
 // A Bush is just an Actor with a certain sprite
 Crafty.c('Bush', {
   init: function() {
-    this.requires('Actor, Solid, spr_bush');
+    this.requires('Actor, spr_bush');
   },
 });
 
@@ -54,6 +54,7 @@ Crafty.c('PlayerCharacter', {
     this.requires('Actor, Fourway, Collision, spr_player, SpriteAnimation')
       .fourway(2)
       .stopOnSolids()
+      .onHit('Bush', this.visitBush, this.leaveBush)
       .onHit('Village', this.visitVillage)
       // These next lines define our four animations
       //  each call to .animate specifies:
@@ -98,6 +99,27 @@ Crafty.c('PlayerCharacter', {
       this.x -= this._movement.x;
       this.y -= this._movement.y;
     }
+  },
+
+  // Check for goodies
+  visitBush: function(data) {
+    if (this.inBush != data[0].obj)
+    { 
+      this.inBush = data[0].obj;     
+
+      // Generate a random number between 1 and 3.
+      var randomNumber = Math.floor(Math.random() * 3) + 1;
+
+      // Use the random number to give the player a 1 in 3 chance of finding stuff in the bush.
+      if (randomNumber == 1)
+        document.getElementById('console').innerHTML += '<div>Found some cool stuff.</div>';
+      else
+        document.getElementById('console').innerHTML += '<div>Sorry nothing here.</div>';
+    }
+  },
+
+  leaveBush: function(data) {
+    this.inBush = null;
   },
 
   // Respond to this player visiting a village
